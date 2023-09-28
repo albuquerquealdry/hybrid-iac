@@ -1,11 +1,11 @@
 'use strict';
 
-module.exports.hello = async (event) => {
+module.exports.register = async (event) => {
   return {
     statusCode: 200,
     body: JSON.stringify(
       {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
+        message: process.env.DYNAMODB_USERS_TABLE,
         input: event,
       },
       null,

@@ -1,4 +1,3 @@
-
 service: api
 frameworkVersion: "3"
 
@@ -10,14 +9,14 @@ provider:
   region: us-east-1
 
   environment:
-    variable1: value1
+    DYNAMODB_USERS_TABLE: ${ssm:users-table}
 
 functions:
   register:
     handler: register/handler.register
     events:
       - httpApi:
-          path: users
+          path: /users
           method: post
 
 custom:
