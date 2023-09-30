@@ -77,84 +77,6 @@
         "LogGroupName": "/aws/lambda/api-dev-register"
       }
     },
-    "IamRoleLambdaExecution": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": [
-                  "lambda.amazonaws.com"
-                ]
-              },
-              "Action": [
-                "sts:AssumeRole"
-              ]
-            }
-          ]
-        },
-        "Policies": [
-          {
-            "PolicyName": {
-              "Fn::Join": [
-                "-",
-                [
-                  "api",
-                  "dev",
-                  "lambda"
-                ]
-              ]
-            },
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogStream",
-                    "logs:CreateLogGroup",
-                    "logs:TagResource"
-                  ],
-                  "Resource": [
-                    {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/api-dev*:*"
-                    }
-                  ]
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": [
-                    {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/api-dev*:*:*"
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        ],
-        "Path": "/",
-        "RoleName": {
-          "Fn::Join": [
-            "-",
-            [
-              "api",
-              "dev",
-              {
-                "Ref": "AWS::Region"
-              },
-              "lambdaRole"
-            ]
-          ]
-        }
-      }
-    },
     "RegisterLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -162,7 +84,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/api/dev/1695941542410-2023-09-28T22:52:22.410Z/api.zip"
+          "S3Key": "serverless/api/dev/1696090611901-2023-09-30T16:16:51.901Z/api.zip"
         },
         "Handler": "register/handler.register",
         "Runtime": "nodejs18.x",
@@ -171,21 +93,16 @@
         "Timeout": 6,
         "Environment": {
           "Variables": {
-            "DYNAMODB_USERS_TABLE": "users-table"
+            "DYNAMODB_USERS_TABLE": "dev-users-register-table"
           }
         },
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
+        "Role": "arn:aws:iam::523616670904:role/users-register-role-role"
       },
       "DependsOn": [
         "RegisterLogGroup"
       ]
     },
-    "RegisterLambdaVersionW3nyBYtm2n57nFpsH3Ol1NzimSry8xUocUkmOqnJy3c": {
+    "RegisterLambdaVersioniQjQnm7vTntmHCxnXvxHe3etpAUqgWJ0vmuyVoLExmw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -303,7 +220,7 @@
     "RegisterLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "RegisterLambdaVersionW3nyBYtm2n57nFpsH3Ol1NzimSry8xUocUkmOqnJy3c"
+        "Ref": "RegisterLambdaVersioniQjQnm7vTntmHCxnXvxHe3etpAUqgWJ0vmuyVoLExmw"
       },
       "Export": {
         "Name": "sls-api-dev-RegisterLambdaFunctionQualifiedArn"

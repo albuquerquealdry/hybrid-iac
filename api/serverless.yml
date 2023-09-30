@@ -9,11 +9,12 @@ provider:
   region: us-east-1
 
   environment:
-    DYNAMODB_USERS_TABLE: ${ssm:users-table}
+    DYNAMODB_USERS_TABLE: ${ssm:dev-parameter-users-register-table_name}
 
 functions:
   register:
     handler: register/handler.register
+    role:  ${ssm:dev-parameter-users-register-register-role-arn} 
     events:
       - httpApi:
           path: /users
