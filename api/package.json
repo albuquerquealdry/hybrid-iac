@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "uuid": "^9.0.1",
+    "aws-sdk": "^2.1467.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1467.0"
+  }
+}
