@@ -9,3 +9,7 @@ variable "type" {
 variable "value" {
   
 }
+
+variable "tags" {
+  
+}

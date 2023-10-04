@@ -15,4 +15,6 @@ resource "aws_iam_policy" "register_policy" {
       },
     ]
   })
+
+  tags   = var.tags
 }

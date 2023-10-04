@@ -14,4 +14,5 @@ resource "aws_iam_role" "register_role" {
       },
     ]
   })
+  tags = var.tags
 }
