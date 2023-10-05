@@ -84,7 +84,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/api/dev/1696244114675-2023-10-02T10:55:14.675Z/api.zip"
+          "S3Key": "serverless/api/dev/1696546826305-2023-10-05T23:00:26.305Z/api.zip"
         },
         "Handler": "register/handler.register",
         "Runtime": "nodejs16.x",
@@ -96,20 +96,20 @@
             "DYNAMODB_USERS_TABLE": "dev-users-register-table"
           }
         },
-        "Role": "arn:aws:iam::523616670904:role/users-register-role-role"
+        "Role": "arn:aws:iam::523616670904:role/users-register-role"
       },
       "DependsOn": [
         "RegisterLogGroup"
       ]
     },
-    "RegisterLambdaVersionpmcM1Y2zIJ1jcdx5XDsyhAOflcIIZpb1aQBugN2zsM": {
+    "RegisterLambdaVersionUgRhxO2H7Xp7FNnUWvg4BGlDKqGqOiTisyh8u7gBo": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "RegisterLambdaFunction"
         },
-        "CodeSha256": "g/vmCtj420CbHY9RFyauwW/reNRVt9z5kXwVkXtUpYs="
+        "CodeSha256": "LGjuqf2+wqS+o3BXp2gg4ZdQbD/YzkN/FPXYlLvsvEw="
       }
     },
     "HttpApi": {
@@ -220,7 +220,7 @@
     "RegisterLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "RegisterLambdaVersionpmcM1Y2zIJ1jcdx5XDsyhAOflcIIZpb1aQBugN2zsM"
+        "Ref": "RegisterLambdaVersionUgRhxO2H7Xp7FNnUWvg4BGlDKqGqOiTisyh8u7gBo"
       },
       "Export": {
         "Name": "sls-api-dev-RegisterLambdaFunctionQualifiedArn"

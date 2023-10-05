@@ -6,6 +6,10 @@ variable "api_endpoints_register" {
   default =   "register"
 }
 
+variable "api_endpoints_login" {
+  default =   "login"
+}
+
 variable "aws_region" {
   default = "us-east-1"
 }
