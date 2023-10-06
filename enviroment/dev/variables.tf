@@ -18,6 +18,11 @@ variable "enviroment" {
   default = "dev"
 }
 
+variable "jwt_secret" {
+  default = "anVuZ2xlIHh5bG9waG9uZSB1bWJyZWxsYSBkb2xwaGluIHVtYnJlbGxhIHF1aWx0IG5hcndoYWwgYWlycGxhbmUgbW91bnRhaW4geHlsb3Bob25l"
+  
+}
+
 variable "tags" {
   default = {
     BU            = "AYO-001"

@@ -53,7 +53,8 @@ data "aws_iam_policy_document" "policy_dynamodb_lambda_login" {
     actions = ["dynamodb:Query", "dynamodb:GetItem" ]
 
     resources = [
-        "${module.dynamodb_table.arn}"
+        "${module.dynamodb_table.arn}",
+        "${module.dynamodb_table.arn}/index/${var.enviroment}-${var.api_core}-${var.api_endpoints_register}-email-gsi"
     ]
   }
 }

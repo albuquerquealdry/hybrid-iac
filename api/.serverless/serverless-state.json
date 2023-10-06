@@ -9,9 +9,6 @@
       "runtime": "nodejs16.x",
       "stage": "dev",
       "region": "us-east-1",
-      "environment": {
-        "DYNAMODB_USERS_TABLE": "dev-users-register-table"
-      },
       "versionFunctions": true,
       "compiledCloudFormationTemplate": {
         "AWSTemplateFormatVersion": "2010-09-09",
@@ -92,6 +89,12 @@
               "LogGroupName": "/aws/lambda/api-dev-register"
             }
           },
+          "LoginLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/api-dev-login"
+            }
+          },
           "RegisterLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
@@ -99,7 +102,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/api/dev/1696546826305-2023-10-05T23:00:26.305Z/api.zip"
+                "S3Key": "serverless/api/dev/1696552859676-2023-10-06T00:40:59.676Z/api.zip"
               },
               "Handler": "register/handler.register",
               "Runtime": "nodejs16.x",
@@ -117,14 +120,51 @@
               "RegisterLogGroup"
             ]
           },
-          "RegisterLambdaVersionUgRhxO2H7Xp7FNnUWvg4BGlDKqGqOiTisyh8u7gBo": {
+          "LoginLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/api/dev/1696552859676-2023-10-06T00:40:59.676Z/api.zip"
+              },
+              "Handler": "login/handler.login",
+              "Runtime": "nodejs16.x",
+              "FunctionName": "api-dev-login",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DYNAMODB_USERS_TABLE": "dev-users-register-table",
+                  "JWT_SECRET": "anVuZ2xlIHh5bG9waG9uZSB1bWJyZWxsYSBkb2xwaGluIHVtYnJlbGxhIHF1aWx0IG5hcndoYWwgYWlycGxhbmUgbW91bnRhaW4geHlsb3Bob25l",
+                  "EMAIL_GSI": "dev-users-register-email-gsi"
+                }
+              },
+              "Role": "arn:aws:iam::523616670904:role/users-register-role"
+            },
+            "DependsOn": [
+              "LoginLogGroup"
+            ]
+          },
+          "RegisterLambdaVersionqBAcJQVnq4Y8bM4WG9tP2NVK2BjXIOC4qqzLxzcc": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "RegisterLambdaFunction"
               },
-              "CodeSha256": "LGjuqf2+wqS+o3BXp2gg4ZdQbD/YzkN/FPXYlLvsvEw="
+              "CodeSha256": "pzJrWVa6O1wIvJkZzhaSamwOqu4i8re+7c9mAIWXQwM="
+            }
+          },
+          "LoginLambdaVersionLnEQeK8bakM97jc85vnbgV91YK36KHLhGcL9WlmK7tA": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "LoginLambdaFunction"
+              },
+              "CodeSha256": "pzJrWVa6O1wIvJkZzhaSamwOqu4i8re+7c9mAIWXQwM="
             }
           },
           "HttpApi": {
@@ -218,6 +258,78 @@
               }
             },
             "DependsOn": "HttpApiIntegrationRegister"
+          },
+          "LoginLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "LoginLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationLogin": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"LoginLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostLogin": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /login",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationLogin"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationLogin"
           }
         },
         "Outputs": {
@@ -232,10 +344,19 @@
           "RegisterLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "RegisterLambdaVersionUgRhxO2H7Xp7FNnUWvg4BGlDKqGqOiTisyh8u7gBo"
+              "Ref": "RegisterLambdaVersionqBAcJQVnq4Y8bM4WG9tP2NVK2BjXIOC4qqzLxzcc"
             },
             "Export": {
               "Name": "sls-api-dev-RegisterLambdaFunctionQualifiedArn"
+            }
+          },
+          "LoginLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "LoginLambdaVersionLnEQeK8bakM97jc85vnbgV91YK36KHLhGcL9WlmK7tA"
+            },
+            "Export": {
+              "Name": "sls-api-dev-LoginLambdaFunctionQualifiedArn"
             }
           },
           "HttpApiId": {
@@ -364,6 +485,9 @@
     "pluginsData": {},
     "functions": {
       "register": {
+        "environment": {
+          "DYNAMODB_USERS_TABLE": "dev-users-register-table"
+        },
         "handler": "register/handler.register",
         "role": "arn:aws:iam::523616670904:role/users-register-role",
         "events": [
@@ -382,7 +506,33 @@
         "timeout": 6,
         "runtime": "nodejs16.x",
         "vpc": {},
-        "versionLogicalId": "RegisterLambdaVersionUgRhxO2H7Xp7FNnUWvg4BGlDKqGqOiTisyh8u7gBo"
+        "versionLogicalId": "RegisterLambdaVersionqBAcJQVnq4Y8bM4WG9tP2NVK2BjXIOC4qqzLxzcc"
+      },
+      "login": {
+        "environment": {
+          "DYNAMODB_USERS_TABLE": "dev-users-register-table",
+          "JWT_SECRET": "anVuZ2xlIHh5bG9waG9uZSB1bWJyZWxsYSBkb2xwaGluIHVtYnJlbGxhIHF1aWx0IG5hcndoYWwgYWlycGxhbmUgbW91bnRhaW4geHlsb3Bob25l",
+          "EMAIL_GSI": "dev-users-register-email-gsi"
+        },
+        "handler": "login/handler.login",
+        "role": "arn:aws:iam::523616670904:role/users-register-role",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/login",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/login"
+          }
+        ],
+        "name": "api-dev-login",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs16.x",
+        "vpc": {},
+        "versionLogicalId": "LoginLambdaVersionLnEQeK8bakM97jc85vnbgV91YK36KHLhGcL9WlmK7tA"
       }
     },
     "configValidationMode": "warn",
@@ -405,7 +555,7 @@
     "artifact": "/home/aldryalbuquerque/hybrid-iac/api/.serverless/api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/api/dev/1696546826305-2023-10-05T23:00:26.305Z",
+    "artifactDirectoryName": "serverless/api/dev/1696552859676-2023-10-06T00:40:59.676Z",
     "artifact": "api.zip"
   }
 }
