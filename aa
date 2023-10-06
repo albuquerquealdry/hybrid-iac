@@ -1,0 +1,25 @@
+service: booking-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: go1.x
+
+package:
+  patterns:
+
+functions:
+  register:
+    environment:
+      DYNAMODB_USERS_TABLE: ${ssm:dev-parameter-users-register-table_name}
+    handler: bin/hello
+    events:
+      - httpApi:
+          path: /users
+          method: post
+  # world:
+  #   handler: bin/world
+  #   events:
+  #     - httpApi:
+  #         path: /world
+  #         method: get
