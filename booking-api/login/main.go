@@ -66,7 +66,6 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		}, err
 	}
 
-	// Query DynamoDB for user with the given email
 	queryInput := &dynamodb.QueryInput{
 		TableName:              aws.String(tableName),
 		IndexName:              aws.String(emailGSI),
@@ -86,7 +85,6 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		}, err
 	}
 
-	// Check if user exists
 	if len(queryOutput.Items) == 0 {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusUnauthorized,
@@ -102,22 +100,14 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 			Body:       "Internal Server Error",
 		}, err
 	}
-	fmt.Print(dbUser)
 
-	// Compare passwords
-	hashedPassword := dbUser.Password
-	userPassword := user.Password
-	err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(hashedPassword))
-	if err != nil {
-		// Se err for diferente de nil, a senha não corresponde
-		fmt.Println("Senha incorreta")
-	} else {
-		// Senha correta
-		fmt.Println("Senha correta")
+	if comparePasswords(user.Password, dbUser.Password) == false {
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusUnauthorized,
+			Body:       "Forbidden",
+		}, nil
 	}
-	fmt.Printf("ta aki oh" + user.Password)
 
-	// Generate JWT token
 	token, err := generateJWTToken(dbUser)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -137,7 +127,11 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 func comparePasswords(inputPassword, hashedPassword string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
-	return err == nil
+	if err != nil {
+		fmt.Printf("Erro ao comparar senhas: %v\n", err)
+		return true
+	}
+	return false
 }
 
 func generateJWTToken(user User) (string, error) {
