@@ -2,12 +2,20 @@ variable "api_core" {
   default = "users"
 }
 
+variable "api_core_booking" {
+  default = "api_core_booking"
+}
+
 variable "api_endpoints_register" {
   default =   "register"
 }
 
 variable "api_endpoints_login" {
   default =   "login"
+}
+
+variable "api_endpoints_booking" {
+  default =   "booking"
 }
 
 variable "aws_region" {
