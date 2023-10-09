@@ -61,7 +61,7 @@ module "login_policy_attachement" {
 
 module "registry_policy_attachement_policy_basic_login" {
     source         = "../../infra/modules/iam-policy-attachement"
-    role_name      = module.registry_role.name
+    role_name      = module.login_role.name
     policy_arn     = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 
 }
@@ -70,6 +70,6 @@ module "parameter-ssm-login-role-arn" {
   source         = "../../infra/modules/ssm"
   name           = "${var.enviroment}-parameter-${var.api_core}-${var.api_endpoints_login}-login-role-arn"
   type           = "String"     
-  value          =  module.registry_role.arn
+  value          =  module.login_role.arn
 tags             = var.tags
 }

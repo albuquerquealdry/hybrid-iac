@@ -1,0 +1,36 @@
+service: booking-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: dev
+  region: us-east-1
+
+package:
+  patterns:
+    - '!./**'
+    - ./bin/**
+
+functions:
+  register:
+    environment:
+      DYNAMODB_USERS_TABLE: ${ssm:dev-parameter-users-register-table_name}
+    handler: bin/register
+    role:  ${ssm:dev-parameter-users-register-register-role-arn} 
+    events:
+      - httpApi:
+          path: /users
+          method: post
+
+  login:
+    environment:
+      DYNAMODB_USERS_TABLE: ${ssm:dev-parameter-users-register-table_name}
+      JWT_SECRET: ${ssm:dev-parameter-jwt-secret}
+      EMAIL_GSI: ${ssm:dev-parameter-users-register-gsi_email}
+    handler: bin/login
+    role:  ${ssm:dev-parameter-users-login-login-role-arn} 
+    events:
+      - httpApi:
+          path: /login
+          method: post
