@@ -14,8 +14,12 @@ variable "api_endpoints_login" {
   default =   "login"
 }
 
-variable "api_endpoints_booking" {
+variable "api_booking" {
   default =   "booking"
+}
+
+variable "api_endpoints_create_booking" {
+  default =   "create_booking"
 }
 
 variable "aws_region" {
