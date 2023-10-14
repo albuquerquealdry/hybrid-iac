@@ -64,7 +64,7 @@ data "aws_iam_policy_document" "policy_dynamodb_lambda_create_booking" {
   statement {
     sid = "SidToOverride"
 
-    actions = ["dynamodb:PutItem" ]
+    actions = ["dynamodb:PutItem"]
 
     resources = [
         "${module.dynamodb_table_booking.arn}"

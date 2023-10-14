@@ -108,7 +108,7 @@ module "create_booking_policy_attachement_policy_basic_login" {
 
 module "parameter-ssm-create_booking-role-arn" {
   source         = "../../infra/modules/ssm"
-  name           = "${var.enviroment}-parameter-${var.api_core_booking}-${var.api_endpoints_create_booking}-create-booking-role-arn"
+  name           = "${var.enviroment}-parameter-${var.api_core_booking}-${var.api_endpoints_create_booking}-role-arn"
   type           = "String"     
   value          =  module.create_booking_role.arn
 tags             =  var.tags
