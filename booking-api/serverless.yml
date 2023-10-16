@@ -38,14 +38,14 @@ functions:
   create_booking:
     environment:
       DYNAMODB_BOOKINGS: ${ssm:dev-parameter-api_core_booking-table_name}
-    handler: bin/create-bookings
+    handler: bin/bookings
     role:  ${ssm:dev-parameter-api_core_booking-create_booking-role-arn} 
     events:
       - httpApi:
           path: /bookings
           method: post
-          authorizer:
-            name: authorizerFunc
+          # authorizer:
+          #   name: authorizerFunc
   
   authorizerFunc:
     environment:
