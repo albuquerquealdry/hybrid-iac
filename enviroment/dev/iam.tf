@@ -113,3 +113,6 @@ module "parameter-ssm-create_booking-role-arn" {
   value          =  module.create_booking_role.arn
 tags             =  var.tags
 }
+
+
+### NOTIFICATION

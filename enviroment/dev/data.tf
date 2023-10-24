@@ -71,3 +71,20 @@ data "aws_iam_policy_document" "policy_dynamodb_lambda_create_booking" {
     ]
   }
 }
+
+data "aws_iam_policy_document" "policy_sqs_email" {
+
+  statement {
+    sid = "SidToOverride"
+
+    actions = ["sqs:SendMessage"]
+    condition {
+      test     = "StringEquals"
+      values   = [module.notification_sns.arn]
+      variable = "aws:SourceArn"
+    }
+    resources = [
+        "$arn:aws:sqs:us-east-1:523616670904:${var.enviroment}-${var.api_core_booking}-email-sqs"
+    ]
+  }
+}
